@@ -12,7 +12,7 @@ def cal_sigal_dist(a: tuple, b: tuple):
     return math.sqrt(result)
 
 
-def cal_set_dist(a: list, b: list):
+def cal_set_dist(a: set, b: set):
     num = len(a) * len(b)
     result = 0
     for i in a:
@@ -38,7 +38,11 @@ def level_class(x):
                     min_set_b_num = j
         print('--------------')
         print(min_dist)
-        new_set = [i for i in new_x[min_set_a_num]] + [j for j in new_x[min_set_b_num]]
+        # new_set = [i for i in new_x[min_set_a_num]] + [j for j in new_x[min_set_b_num]]
+        new_set = set.union(
+            deepcopy(new_x[min_set_a_num]),
+            deepcopy(new_x[min_set_b_num])
+        )
         print(new_x[min_set_a_num])
         print(new_x[min_set_b_num])
         print(new_set)
@@ -64,11 +68,11 @@ def init():
     for i in data:
         tmp = list(map(float, i[0:4]))
         tmp.append(num)
-        x.append([
+        x.append({
             tuple(
                 tmp
             )
-        ])
+        })
         y.append(i[4])
         num += 1
     return x, y
