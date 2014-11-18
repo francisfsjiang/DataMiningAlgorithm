@@ -2,6 +2,7 @@
 from random import randint
 from math import sqrt
 import pickle
+import copy
 
 
 def map_split(s):
@@ -17,7 +18,7 @@ def calc_dist(a: list, b: list):
 
 
 def kmeans(x):
-    kernel_pos = [x[randint(0, 149)] for i in range(3)]
+    kernel_pos = [copy.deepcopy(x[randint(0, 149)]) for i in range(3)]
 
     for i in range(100):
         last_kernel_pos = [[j for j in i] for i in kernel_pos]
@@ -46,7 +47,7 @@ def kmeans(x):
             return kernel_pos
 
 
-def cal_sq(kernel_pos, x):
+def cal_dist_sum(kernel_pos, x):
     result = 0
     for j in range(len(x)):
         min_k, min_dist = 0, 0xFFFFFFFF
@@ -81,24 +82,29 @@ def init():
         y.append(i[4:5])
 
     kernel_pos = kmeans(x)
+    print(x)
     print(kernel_pos)
 
     min_dist = 0xFFFFFFF
     best_kernel_pos = []
-    for i in range(5000):
-        if i % 100 == 0:
-            print(min_dist)
+    for i in range(100):
+        # if i % 100 == 0:
+        #     print(min_dist)
         kernel_pos = kmeans(x)
-        dist = cal_sq(kernel_pos, x)
+        dist = cal_dist_sum(kernel_pos, x)
+        print(dist,kernel_pos)
         if dist < min_dist:
             min_dist = dist
             best_kernel_pos = [[j for j in i] for i in kernel_pos]
     print('best')
     print(min_dist)
     print(best_kernel_pos)
+    print(cal_dist_sum(best_kernel_pos, x))
     flag = cal_flag(best_kernel_pos, x)
     print(flag)
+    print(x)
+    return x, y, best_kernel_pos, flag, min_dist
 
 
 if __name__ == '__main__':
-    init()
+    (x, y, best_kernel_pos, flag, best_dist) = init()

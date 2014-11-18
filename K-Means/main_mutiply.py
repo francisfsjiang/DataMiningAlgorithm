@@ -6,6 +6,7 @@ import multiprocessing as mp
 from multiprocessing import queues, pool
 from multiprocessing.queues import Empty
 import pickle
+import copy
 
 
 def map_split(s):
@@ -21,7 +22,7 @@ def calc_dist(a: list, b: list):
 
 
 def kmeans(x):
-    kernel_pos = [x[randint(0, 149)] for i in range(3)]
+    kernel_pos = [copy.deepcopy(x[randint(0, 149)]) for i in range(3)]
 
     for i in range(100):
         last_kernel_pos = [[j for j in i] for i in kernel_pos]
@@ -84,7 +85,7 @@ def cal_kmeans_loop(x, times, process_queue):
             min_dist = dist
             best_kernel_pos = [[j for j in i] for i in kernel_pos]
 
-        if i % 100 == 0:
+        if i % 1000 == 0:
             # print(min_dist)
             process_queue.put((min_dist, [[j for j in i] for i in best_kernel_pos]))
 
@@ -110,7 +111,7 @@ if __name__ == '__main__':
     context = mp.get_context('fork')
 
     process_queue = context.Queue(maxsize=5000)
-    process_pool = context.Pool(initializer=cal_kmeans_loop, initargs=(x, 5000, process_queue))
+    process_pool = context.Pool(initializer=cal_kmeans_loop, initargs=(x, 10000, process_queue))
     process_pool.close()
     process_pool.join()
     # process_queue.close()
@@ -128,7 +129,7 @@ if __name__ == '__main__':
         print(e)
         print(best_item)
 
-    record_file = open("record.dump", mode='wb')
+    record_file = open("record-" + str(best_item[0]) + ".dump", mode='wb')
     #pickle.dump((RECORD_DATA, RECORD_SUPPORT), record_file)
     pickle.Pickler(record_file).dump(best_item)
     record_file.close()
