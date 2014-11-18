@@ -1,6 +1,7 @@
 # encoding: utf-8
 from random import randint
 from math import sqrt
+import pickle
 
 
 def map_split(s):
@@ -69,7 +70,7 @@ def cal_flag(kernel_pos, x):
     return result
 
 
-if __name__ == '__main__':
+def init():
     origin_file = open('iris.txt', mode='r')
     origin_data = list(map(map_split, origin_file.readlines()))
 
@@ -97,3 +98,7 @@ if __name__ == '__main__':
     print(best_kernel_pos)
     flag = cal_flag(best_kernel_pos, x)
     print(flag)
+
+
+if __name__ == '__main__':
+    init()
