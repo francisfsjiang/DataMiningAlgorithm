@@ -3,6 +3,7 @@ import csv
 import math
 from copy import deepcopy
 import pickle
+from array import array
 
 
 def cal_sigal_dist(a: tuple, b: tuple):
@@ -12,51 +13,38 @@ def cal_sigal_dist(a: tuple, b: tuple):
     return math.sqrt(result)
 
 
-def cal_set_dist(a: set, b: set):
-    num = len(a) * len(b)
-    result = 0
-    for i in a:
-        for j in b:
-            result += cal_sigal_dist(i, j)
-    return result/num
+def cal_dist_from_mat(mat: list, a: tuple, b: tuple):
+    return mat[
+        a[-1]
+    ][
+        b[-1]
+    ]
 
 
-def MST(x):
-    new_x = deepcopy(x)
-    for t in range(0, len(new_x)-3):
-        min_dist = 0xFFFFFFFF
-        min_set_a_num = -1
-        min_set_b_num = -1
-        for i in range(len(new_x)):
-            for j in range(len(new_x)):
-                if i == j:
-                    continue
-                dist = cal_set_dist(new_x[i], new_x[j])
+def MST(x, mat):
+    in_set = {x[0]}
+    out_set = set(x[1:len(x)])
+    print(len(in_set))
+    print(len(out_set))
+
+    edge = []
+
+    for t in range(len(x)-1):
+        min_dist = 0xFFFFFFF
+        for i in in_set:
+            for j in out_set:
+                dist = cal_dist_from_mat(mat, i, j)
                 if dist < min_dist:
+                    min_from = i
+                    min_to = j
                     min_dist = dist
-                    min_set_a_num = i
-                    min_set_b_num = j
-        print('--------------')
-        print(min_dist)
-        # new_set = [i for i in new_x[min_set_a_num]] + [j for j in new_x[min_set_b_num]]
-        new_set = set.union(
-            deepcopy(new_x[min_set_a_num]),
-            deepcopy(new_x[min_set_b_num])
-        )
-        print(new_x[min_set_a_num])
-        print(new_x[min_set_b_num])
-        print(new_set)
-        if min_set_a_num < min_set_b_num:
-            new_x.remove(new_x[min_set_b_num])
-            new_x.remove(new_x[min_set_a_num])
-        else:
-            new_x.remove(new_x[min_set_a_num])
-            new_x.remove(new_x[min_set_b_num])
-        new_x.append(new_set)
+        in_set.add(min_to)
+        out_set.remove(min_to)
+        edge.append((min_from[-1], min_to[-1], min_dist))
+        print(len(in_set))
+        print(len(out_set))
 
-        print('x len ', len(new_x))
-        print(new_x)
-    return new_x
+    return edge
 
 
 def init():
@@ -68,14 +56,31 @@ def init():
     for i in data:
         tmp = list(map(float, i[0:4]))
         tmp.append(num)
-        x.append({
+        x.append(
             tuple(
                 tmp
             )
-        })
+        )
         y.append(i[4])
         num += 1
     return x, y
+
+
+def cal_dist_matrix(x):
+    mat = [[0 for i in range(len(x))] for j in range(len(x))]
+
+    for i in range(len(mat)):
+        for j in range(len(mat[i])):
+            if i == j:
+                mat[i][j] = 0
+            else:
+                mat[i][j] = cal_sigal_dist(x[i], x[j])
+
+    return mat
+
+
+def cmp_fun(a):
+    return a[-1]
 
 
 if __name__ == '__main__':
@@ -83,11 +88,24 @@ if __name__ == '__main__':
     print(x)
     print(y)
 
-    new_x = MST(x)
-
-    record_file = open('record.dump', 'wb')
-    pk = pickle.Pickler(record_file).dump(new_x)
-    record_file.close()
-
-    for i in new_x:
+    mat = cal_dist_matrix(x)
+    for i in mat:
         print(i)
+
+    dist = cal_dist_from_mat(mat, x[1], x[0])
+    print(dist)
+    edge = MST(x, mat)
+    print(edge)
+
+    edge.sort(key=cmp_fun, reverse=True)
+    print(edge)
+    edge.remove(edge[0])
+    edge.remove(edge[0])
+    print(edge)
+    #
+    # record_file = open('record.dump', 'wb')
+    # pk = pickle.Pickler(record_file).dump(new_x)
+    # record_file.close()
+    #
+    # for i in new_x:
+    #     print(i)
