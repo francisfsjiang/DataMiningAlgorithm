@@ -21,7 +21,7 @@ def cal_set_dist(a: set, b: set):
     return result/num
 
 
-def level_class(x):
+def MST(x):
     new_x = deepcopy(x)
     for t in range(0, len(new_x)-3):
         min_dist = 0xFFFFFFFF
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     print(x)
     print(y)
 
-    new_x = level_class(x)
+    new_x = MST(x)
 
     record_file = open('record.dump', 'wb')
     pk = pickle.Pickler(record_file).dump(new_x)
