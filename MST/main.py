@@ -109,3 +109,26 @@ if __name__ == '__main__':
     #
     # for i in new_x:
     #     print(i)
+
+    #init color
+    color = {}
+    for i in range(len(x)):
+        color[i] = i
+
+    for i in edge:
+        a = i[0]
+        b = i[1]
+        print(a, b)
+        b_color = color[b]
+        for j in color.keys():
+            if color[j] == b_color:
+                color[j] = color[a]
+    print(list(color.items()))
+
+    counter = {}
+    for i, j in color.items():
+        if not j in counter:
+            counter[j] = 1
+        else:
+            counter[j] += 1
+    print(counter)
