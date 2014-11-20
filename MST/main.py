@@ -21,19 +21,19 @@ def cal_dist_from_mat(mat: list, a: tuple, b: tuple):
     ]
 
 
-def MST(x, mat):
-    in_set = {x[0]}
-    out_set = set(x[1:len(x)])
+def MST(origin_edge, node_num):
+    in_set = {0}
+    out_set = set(range(1, node_num))
+    print(in_set)
+    print(out_set)
     print(len(in_set))
     print(len(out_set))
 
-    edge = []
-
-    for t in range(len(x)-1):
+    for t in range(node_num):
         min_dist = 0xFFFFFFF
         for i in in_set:
             for j in out_set:
-                dist = cal_dist_from_mat(mat, i, j)
+
                 if dist < min_dist:
                     min_from = i
                     min_to = j
@@ -48,33 +48,31 @@ def MST(x, mat):
 
 
 def init():
-    file = open('iris.txt', mode='r')
-    data = csv.reader(file)
-    x = []
-    y = []
-    num = 0
-    for i in data:
-        tmp = list(map(float, i[0:4]))
-        tmp.append(num)
-        x.append(
-            tuple(
-                tmp
-            )
-        )
-        y.append(i[4])
-        num += 1
-    return x, y
+    file = open('football1.txt', mode='r')
+    data = list(file.readlines())
+    print(data)
+    node_num = int(data[0])
+    edge_num = int(data[1])
+    edge_name = {}
+    for i in range(2, node_num+2):
+        num, name = data[i].split()
+        num = int(num)
+        edge_name[num] = name
+
+    origin_edge = {}
+    for i in range(node_num+2, node_num+2+edge_num):
+        tmp = list(map(int, data[i].split()))
+        tmp[2] = 0
+        origin_edge[tuple(tmp[0:2])] = 0
+    return edge_name, origin_edge, node_num
 
 
-def cal_dist_matrix(x):
-    mat = [[0 for i in range(len(x))] for j in range(len(x))]
+def cal_dist_matrix(origin_edge, node_num):
+    mat = [[0 for i in range(node_num+1)] for j in range(node_num+1)]
 
-    for i in range(len(mat)):
-        for j in range(len(mat[i])):
-            if i == j:
-                mat[i][j] = 0
-            else:
-                mat[i][j] = cal_sigal_dist(x[i], x[j])
+    for i, j in origin_edge.items():
+        print(i)
+        mat[i[0]][i[1]] = 1
 
     return mat
 
@@ -84,17 +82,16 @@ def cmp_fun(a):
 
 
 if __name__ == '__main__':
-    x, y = init()
-    print(x)
-    print(y)
+    node_name, origin_edge, node_num = init()
+    print(origin_edge)
+    print(node_name)
 
-    mat = cal_dist_matrix(x)
-    for i in mat:
-        print(i)
 
-    dist = cal_dist_from_mat(mat, x[1], x[0])
-    print(dist)
-    edge = MST(x, mat)
+    mat = cal_dist_matrix(origin_edge, node_num)
+
+
+
+    edge = MST(origin_edge, node_num)
     print(edge)
 
     edge.sort(key=cmp_fun, reverse=True)
@@ -112,7 +109,7 @@ if __name__ == '__main__':
 
     #init color
     color = {}
-    for i in range(len(x)):
+    for i in range(len(origin_edge)):
         color[i] = i
 
     for i in edge:
